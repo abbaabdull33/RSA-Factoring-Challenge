@@ -1,27 +1,30 @@
 #!/usr/bin/python3
 
+import math
 import sys
 
-def factorize(n):
-    for i in range(2, n):
+def factorize_number(n):
+    for i in range(2, int(math.sqrt(n)) + 1):
         if n % i == 0:
             return i, n // i
+    return n, 1
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: {} <file>".format(sys.argv[0]))
-        sys.exit(1)
-
-    input_file = sys.argv[1]
-
-    with open(input_file, 'r') as file:
-        numbers = file.read().splitlines()
-
-    for number in numbers:
-        n = int(number)
-        factors = factorize(n)
-        print(f"{n}={factors[0]}*{factors[1]}")
+def factorize_file(filename):
+    with open(filename, 'r') as file:
+        for line in file:
+            line = line.strip()
+            try:
+                number = int(line)
+                p, q = factorize_number(number)
+                print(f"{number}={p}*{q}")
+            except ValueError:
+                print(f"Skipping non-numeric line: {line}")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    factorize_file(filename)
 

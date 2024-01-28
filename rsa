@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+
+import sys
+import math
+import random
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def pollards_rho(n):
+    x = random.randint(1, n-1)
+    y = x
+    d = 1
+
+    f = lambda x: (x**2 + 1) % n
+
+    while d == 1:
+        x = f(x)
+        y = f(f(y))
+        d = gcd(abs(x - y), n)
+
+    return d
+
+def factorize_rsa(n):
+    factors = []
+    
+    while n > 1:
+        if is_prime(n):
+            factors.append(n)
+            break
+
+        factor = pollards_rho(n)
+        while n % factor == 0:
+            n //= factor
+            factors.append(factor)
+
+    return factors
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(math.sqrt(num)) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: {} <file>".format(sys.argv[0]))
+        sys.exit(1)
+
+    input_file = sys.argv[1]
+
+    with open(input_file, 'r') as file:
+        numbers = file.read().splitlines()
+
+    for number in numbers:
+        n = int(number)
+        factors = factorize_rsa(n)
+        print(f"{n}={'*'.join(map(str, factors))}")
+
+if __name__ == "__main__":
+    main()
+
